@@ -1,3 +1,11 @@
+# microdata analysis / constructing price indexes per HH income quintile
+
+#load libraries
+
+library(survey)
+
+
+
 data <- read.csv2("hbs_hh_basic_2022_gr.csv")
 
 # HC03 = sex of reference: 1 = male, 2 = female
