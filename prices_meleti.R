@@ -5,8 +5,10 @@
 library(survey)
 
 
-
+# load data (silc 2022)
 data <- read.csv2("hbs_hh_basic_2022_gr.csv")
+
+# memo
 
 # HC03 = sex of reference: 1 = male, 2 = female
 # HC05 = 1 = unmaried, 2= married including registered partnership, 3 = widowed, divorced, separated
@@ -15,27 +17,19 @@ data <- read.csv2("hbs_hh_basic_2022_gr.csv")
 # HE = household expenditure
 
 
-
-
+# test: HH weighted mean income, quantiles, quintiles
 subset_data <- data[, c("HH095", "HA10")]
-
+# remove NAs
 subset_data <- na.omit(subset_data)
-
+# Weights
 survey_design <- svydesign(ids = ~1, weights = ~HA10, data = subset_data)
-
-
+#mean
 weighted_mean_H095 <- svymean(~HH095, design = survey_design)
-
-weighted_mean_H095[[1]]
-
-
+ighted_mean_H095[[1]]
+#qauntiles
 weighted_quantiles_HH095 <- svyquantile(~HH095, design = survey_design, quantiles = c(0.25, 0.50, 0.75))
 print(weighted_quantiles_HH095)
 
-
-
-# Calculate the weighted quintiles of "HH095"
+#quintiles
 weighted_quintiles_HH095 <- svyquantile(~HH095, design = survey_design, quantiles = c(0.20, 0.40, 0.60, 0.80))
-
-# Print the weighted quintiles
 print(weighted_quintiles_HH095)
