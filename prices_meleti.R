@@ -34,8 +34,8 @@ data21 <- read.csv2("hbs_hh_basic_2021_gr.csv")
 
 
 # sum of expenditures. rowSums must be used to deal with NAs
-data22$sum_HE <- rowSums(data[, c("HE01", "HE02", "HE03", "HE04", "HE05", "HE06", "HE07", "HE08", "HE09", "HE10", "HE11", "HE12")])
-data21$sum_HE <- rowSums(data[, c("HE01", "HE02", "HE03", "HE04", "HE05", "HE06", "HE07", "HE08", "HE09", "HE10", "HE11", "HE12")])
+data22$sum_HE <- rowSums(data22[, c("HE01", "HE02", "HE03", "HE04", "HE05", "HE06", "HE07", "HE08", "HE09", "HE10", "HE11", "HE12")])
+data21$sum_HE <- rowSums(data21[, c("HE01", "HE02", "HE03", "HE04", "HE05", "HE06", "HE07", "HE08", "HE09", "HE10", "HE11", "HE12")])
 
 
 # Create a survey design object
@@ -90,13 +90,13 @@ for (quintile in c(quintile_20_22, quintile_40_22, quintile_60_22, quintile_80_2
     ratio_value <- ratio_variable$ratio[1]
     
     # Assign the ratio value to the appropriate vector based on the quintile
-    if (quintile == quintile_20) {
+    if (quintile == quintile_20_22) {
       ratios_20_22[i] <- ratio_value
-    } else if (quintile == quintile_40) {
+    } else if (quintile == quintile_40_22) {
       ratios_40_22[i] <- ratio_value
-    } else if (quintile == quintile_60) {
+    } else if (quintile == quintile_60_22) {
       ratios_60_22[i] <- ratio_value
-    } else if (quintile == quintile_80) {
+    } else if (quintile == quintile_80_22) {
       ratios_80_22[i] <- ratio_value
     }
   }
@@ -121,20 +121,20 @@ for (quintile in c(quintile_20_21, quintile_40_21, quintile_60_21, quintile_80_2
     variable_name <- ifelse(i < 10, paste0("HE0", i), paste0("HE", i))
     
     # Calculate the ratio of HEi over sum_HE
-    ratio_variable <- svyratio(~get(variable_name), ~sum_HE,
+    ratio_variable_21 <- svyratio(~get(variable_name), ~sum_HE,
                                design = subset(survey_design21, HH095 <= quintile))
     
     # Extract the ratio value from ratio_variable
-    ratio_value <- ratio_variable$ratio[1]
+    ratio_value <- ratio_variable_21$ratio[1]
     
     # Assign the ratio value to the appropriate vector based on the quintile
-    if (quintile == quintile_20) {
+    if (quintile == quintile_20_21) {
       ratios_20_21[i] <- ratio_value
-    } else if (quintile == quintile_40) {
+    } else if (quintile == quintile_40_21) {
       ratios_40_21[i] <- ratio_value
-    } else if (quintile == quintile_60) {
+    } else if (quintile == quintile_60_21) {
       ratios_60_21[i] <- ratio_value
-    } else if (quintile == quintile_80) {
+    } else if (quintile == quintile_80_21) {
       ratios_80_21[i] <- ratio_value
     }
   }
@@ -155,6 +155,8 @@ data_prices <- get_eurostat(id, time_format = "num")
 data_prices_GR <- data_prices[data_prices$geo == "EL" & data_prices$time >= 2021, ]
 data_prices_GR_index <- data_prices_GR[data_prices_GR$unit=="INX_A_AVG",]
 data_prices_GR_index_2022 <- data_prices_GR_index[data_prices_GR_index$time==2022,]
+data_prices_GR_index_2021 <- data_prices_GR_index[data_prices_GR_index$time==2021,]
+
 
 coicop_values <- c("CP01", "CP02", "CP03", "CP04", "CP05", "CP06", "CP07", "CP08", "CP09", "CP10", "CP11", "CP12")
 
@@ -171,9 +173,22 @@ for (coicop_value in coicop_values) {
 #filtered_data_df <- filtered_data_df[-1, ]
 
 filtered_data_df_2022 <- filtered_data_df[filtered_data_df$time == 2022,]
+filtered_data_df_2021 <- filtered_data_df[filtered_data_df$time == 2021,]
+
+sum(ratios_20_22*filtered_data_df_2022$values)
+sum(ratios_40_22*filtered_data_df_2022$values)
+sum(ratios_60_22*filtered_data_df_2022$values)
+sum(ratios_80_22*filtered_data_df_2022$values)
 
 
-sum(ratios_20*filtered_data_df_2022$values)
-sum(ratios_40*filtered_data_df_2022$values)
-sum(ratios_60*filtered_data_df_2022$values)
-sum(ratios_80*filtered_data_df_2022$values)
+sum(ratios_20_21*filtered_data_df_2021$values)
+sum(ratios_40_21*filtered_data_df_2021$values)
+sum(ratios_60_21*filtered_data_df_2021$values)
+sum(ratios_80_21*filtered_data_df_2021$values)
+
+
+# inflation rates
+sum(ratios_20_22*filtered_data_df_2022$values)/sum(ratios_20_21*filtered_data_df_2021$values) -1
+sum(ratios_40_22*filtered_data_df_2022$values)/sum(ratios_40_21*filtered_data_df_2021$values) -1
+sum(ratios_60_22*filtered_data_df_2022$values)/sum(ratios_60_21*filtered_data_df_2021$values) -1
+sum(ratios_80_22*filtered_data_df_2022$values)/sum(ratios_80_21*filtered_data_df_2021$values) -1
