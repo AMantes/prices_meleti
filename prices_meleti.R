@@ -5,6 +5,8 @@
 library(survey)
 library(tidyverse)
 library(eurostat)
+library(gridExtra)
+
 
 # load data (2022 and 2021 HBS)
 data22 <- read.csv2("hbs_hh_basic_2022_gr.csv")
@@ -44,7 +46,7 @@ survey_design21 <- svydesign(ids = ~1, weights = ~HA10, data = data21)
 
 # Calculate the weighted quintiles of "HH095" (income)
 weighted_quintiles_HH095_22 <- svyquantile(~HH095, design = survey_design22, quantiles = c(0.20, 0.40, 0.60, 0.80))
-weighted_quintiles_HH095_21 <- svyquantile(~HH095, design = survey_design21, quantiles = c(0.20, 0.40, 0.60, 0.80))
+weighted_quintiles_HH095_21 <- svyquantile(~HH095, design = survey_design21, quantiles = c(0.20, 0.40, 0.60, 0.80,1))
 
 
 # Extract the quantile values
@@ -173,20 +175,69 @@ filtered_data_df_2022 <- filtered_data_df[filtered_data_df$time == 2022,]
 filtered_data_df_2021 <- filtered_data_df[filtered_data_df$time == 2021,]
 
 # Price indexes 2022
-sum(ratios_20_22*filtered_data_df_2022$values)
-sum(ratios_40_22*filtered_data_df_2022$values)
-sum(ratios_60_22*filtered_data_df_2022$values)
-sum(ratios_80_22*filtered_data_df_2022$values)
+p20_22= sum(ratios_20_22*filtered_data_df_2022$values)
+p40_22=sum(ratios_40_22*filtered_data_df_2022$values)
+p60_22=sum(ratios_60_22*filtered_data_df_2022$values)
+p80_22=sum(ratios_80_22*filtered_data_df_2022$values)
 
 #Price indexes 2021
-sum(ratios_20_21*filtered_data_df_2021$values)
-sum(ratios_40_21*filtered_data_df_2021$values)
-sum(ratios_60_21*filtered_data_df_2021$values)
-sum(ratios_80_21*filtered_data_df_2021$values)
+p_20_21=sum(ratios_20_21*filtered_data_df_2021$values)
+p_40_21=sum(ratios_40_21*filtered_data_df_2021$values)
+p_60_21=sum(ratios_60_21*filtered_data_df_2021$values)
+p_80_21=sum(ratios_80_21*filtered_data_df_2021$values)
 
 
 # inflation rates
-sum(ratios_20_22*filtered_data_df_2022$values)/sum(ratios_20_21*filtered_data_df_2021$values) -1
-sum(ratios_40_22*filtered_data_df_2022$values)/sum(ratios_40_21*filtered_data_df_2021$values) -1
-sum(ratios_60_22*filtered_data_df_2022$values)/sum(ratios_60_21*filtered_data_df_2021$values) -1
-sum(ratios_80_22*filtered_data_df_2022$values)/sum(ratios_80_21*filtered_data_df_2021$values) -1
+inf20=sum(ratios_20_22*filtered_data_df_2022$values)/sum(ratios_20_21*filtered_data_df_2021$values) -1
+inf40=sum(ratios_40_22*filtered_data_df_2022$values)/sum(ratios_40_21*filtered_data_df_2021$values) -1
+inf60=sum(ratios_60_22*filtered_data_df_2022$values)/sum(ratios_60_21*filtered_data_df_2021$values) -1
+inf80=sum(ratios_80_22*filtered_data_df_2022$values)/sum(ratios_80_21*filtered_data_df_2021$values) -1
+
+
+
+prices_2021 <- c(p_20_21, p_40_21, p_60_21, p_80_21)
+prices_2022 <- c(p20_22, p40_22, p60_22, p80_22)
+
+# Create a data frame to store both years
+price_data <- data.frame(
+  Quantile = rep(c("20", "40", "60", "80"), 2),
+  Year = rep(c("2021", "2022"), each = 4),
+  PriceIndex = c(prices_2021, prices_2022)
+)
+
+price_plot <- ggplot(price_data, aes(x = Quantile, y = PriceIndex, fill = Year)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  labs(title = "Price Index Comparison (2021 vs. 2022)",
+       y = "Price Index",
+       x = "Quantile") +
+  scale_fill_manual(values = c("#3366CC", "#DC3912")) +
+  theme_minimal()
+
+inflation <- c(inf20, inf40, inf60, inf80)
+
+# Convert inflation rates to percentage
+inflation_percent <- inflation * 100  # Multiply by 100 to convert to percentage
+
+# Create a data frame for inflation
+inflation_data <- data.frame(
+  Quantile = c("20", "40", "60", "80"),
+  Inflation = inflation_percent  # Use the converted percentage values
+)
+
+
+inflation_plot <- ggplot(inflation_data, aes(x = as.numeric(Quantile), y = Inflation)) +
+  geom_point(color = "#009E73", size = 3) +
+  geom_smooth(method = "lm", color = "blue", se = FALSE) +  # Add linear trendline
+  labs(title = "Inflation Rates (2022 vs. 2021)",
+       y = "Inflation Rate (%)",
+       x = "Quantile") +
+  theme_minimal()
+
+# Display the plot
+print(inflation_plot)
+
+combined_plot <- grid.arrange(price_plot, inflation_plot, ncol = 2)
+
+# Display the combined plot
+print(combined_plot)
+
