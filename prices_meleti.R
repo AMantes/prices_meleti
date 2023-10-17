@@ -9,7 +9,6 @@ library(eurostat)
 # load data (2022 and 2021 HBS)
 data22 <- read.csv2("hbs_hh_basic_2022_gr.csv")
 
-
 data21 <- read.csv2("hbs_hh_basic_2021_gr.csv")
 # memo
 
@@ -148,7 +147,7 @@ print(ratios_80_21)
 
 
 
-#Prices c
+#Prices
 
 id<- "prc_hicp_aind" 
 data_prices <- get_eurostat(id, time_format = "num")
@@ -169,18 +168,17 @@ for (coicop_value in coicop_values) {
   filtered_data_df <- rbind(filtered_data_df, filtered_data)
 }
 
-# Remove the first empty row
-#filtered_data_df <- filtered_data_df[-1, ]
 
 filtered_data_df_2022 <- filtered_data_df[filtered_data_df$time == 2022,]
 filtered_data_df_2021 <- filtered_data_df[filtered_data_df$time == 2021,]
 
+# Price indexes 2022
 sum(ratios_20_22*filtered_data_df_2022$values)
 sum(ratios_40_22*filtered_data_df_2022$values)
 sum(ratios_60_22*filtered_data_df_2022$values)
 sum(ratios_80_22*filtered_data_df_2022$values)
 
-
+#Price indexes 2021
 sum(ratios_20_21*filtered_data_df_2021$values)
 sum(ratios_40_21*filtered_data_df_2021$values)
 sum(ratios_60_21*filtered_data_df_2021$values)
