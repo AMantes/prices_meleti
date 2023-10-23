@@ -70,7 +70,7 @@ quintile_20_21 <- weighted_quintiles_HH095_21[[1]][1]
 quintile_40_21 <- weighted_quintiles_HH095_21[[1]][2]
 quintile_60_21 <- weighted_quintiles_HH095_21[[1]][3]
 quintile_80_21 <- weighted_quintiles_HH095_21[[1]][4]
-quintile_80_21 <- weighted_quintiles_HH095_21[[1]][5]
+quintile_100_21 <- weighted_quintiles_HH095_21[[1]][5]
 
 
 # Create empty vectors to store the consumption ratios per quintile
