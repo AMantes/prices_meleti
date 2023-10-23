@@ -54,8 +54,8 @@ survey_design21 <- svydesign(ids = ~1, weights = ~HA10, data = data21)
 
 
 # Calculate the weighted quintiles of "HH095" (income)
-weighted_quintiles_HH095_22 <- svyquantile(~HH095, design = survey_design22, quantiles = c(0.20, 0.40, 0.60, 0.80))
-weighted_quintiles_HH095_21 <- svyquantile(~HH095, design = survey_design21, quantiles = c(0.20, 0.40, 0.60, 0.80,1))
+weighted_quintiles_HH095_22 <- svyquantile(~HH095, design = survey_design22, quantiles = c(0.20, 0.40, 0.60, 0.80, 1), na.rm=TRUE)
+weighted_quintiles_HH095_21 <- svyquantile(~HH095, design = survey_design21, quantiles = c(0.20, 0.40, 0.60, 0.80, 1), na.rm=TRUE)
 
 
 # Extract the quantile values
@@ -63,13 +63,14 @@ quintile_20_22 <- weighted_quintiles_HH095_22[[1]][1]
 quintile_40_22 <- weighted_quintiles_HH095_22[[1]][2]
 quintile_60_22 <- weighted_quintiles_HH095_22[[1]][3]
 quintile_80_22 <- weighted_quintiles_HH095_22[[1]][4]
+quintile_100_22 <- weighted_quintiles_HH095_22[[1]][5]
 
 # Extract the quantile values
 quintile_20_21 <- weighted_quintiles_HH095_21[[1]][1]
 quintile_40_21 <- weighted_quintiles_HH095_21[[1]][2]
 quintile_60_21 <- weighted_quintiles_HH095_21[[1]][3]
 quintile_80_21 <- weighted_quintiles_HH095_21[[1]][4]
-
+quintile_80_21 <- weighted_quintiles_HH095_21[[1]][5]
 
 
 # Create empty vectors to store the consumption ratios per quintile
@@ -77,11 +78,13 @@ ratios_20_22 <- numeric(12)
 ratios_40_22 <- numeric(12)
 ratios_60_22 <- numeric(12)
 ratios_80_22 <- numeric(12)
+ratios_100_22 <- numeric(12)
 
 ratios_20_21 <- numeric(12)
 ratios_40_21 <- numeric(12)
 ratios_60_21 <- numeric(12)
 ratios_80_21 <- numeric(12)
+ratios_100_21 <- numeric(12)
 
 # Loop through quintiles
 for (quintile in c(quintile_20_22, quintile_40_22, quintile_60_22, quintile_80_22)) {
@@ -108,8 +111,10 @@ for (quintile in c(quintile_20_22, quintile_40_22, quintile_60_22, quintile_80_2
       ratios_60_22[i] <- ratio_value
     } else if (quintile == quintile_80_22) {
       ratios_80_22[i] <- ratio_value
-    }
+    } else if (quintile == quintile_100_22) {
+      ratios_100_22[i] <- ratio_value
   }
+}
 }
 
 # Print the ratios for all quintiles
@@ -117,7 +122,7 @@ print(ratios_20_22)
 print(ratios_40_22)
 print(ratios_60_22)
 print(ratios_80_22)
-
+print(ratios_100_22)
 
 
 # for 2021
@@ -146,8 +151,10 @@ for (quintile in c(quintile_20_21, quintile_40_21, quintile_60_21, quintile_80_2
       ratios_60_21[i] <- ratio_value
     } else if (quintile == quintile_80_21) {
       ratios_80_21[i] <- ratio_value
-    }
+    } else if (quintile == quintile_100_21) {
+      ratios_100_21[i] <- ratio_value
   }
+}
 }
 
 # Print the ratios for all quintiles
@@ -155,7 +162,7 @@ print(ratios_20_21)
 print(ratios_40_21)
 print(ratios_60_21)
 print(ratios_80_21)
-
+print(ratios_100_21)
 
 
 #Prices
@@ -188,36 +195,38 @@ p20_22= sum(ratios_20_22*filtered_data_df_2022$values)
 p40_22=sum(ratios_40_22*filtered_data_df_2022$values)
 p60_22=sum(ratios_60_22*filtered_data_df_2022$values)
 p80_22=sum(ratios_80_22*filtered_data_df_2022$values)
+p100_22=sum(ratios_100_22*filtered_data_df_2022$values)
 
 #Price indexes 2021
 p_20_21=sum(ratios_20_21*filtered_data_df_2021$values)
 p_40_21=sum(ratios_40_21*filtered_data_df_2021$values)
 p_60_21=sum(ratios_60_21*filtered_data_df_2021$values)
 p_80_21=sum(ratios_80_21*filtered_data_df_2021$values)
-
+p100_21=sum(ratios_100_21*filtered_data_df_2021$values)
 
 # inflation rates
 inf20=sum(ratios_20_22*filtered_data_df_2022$values)/sum(ratios_20_21*filtered_data_df_2021$values) -1
 inf40=sum(ratios_40_22*filtered_data_df_2022$values)/sum(ratios_40_21*filtered_data_df_2021$values) -1
 inf60=sum(ratios_60_22*filtered_data_df_2022$values)/sum(ratios_60_21*filtered_data_df_2021$values) -1
 inf80=sum(ratios_80_22*filtered_data_df_2022$values)/sum(ratios_80_21*filtered_data_df_2021$values) -1
+inf100=sum(ratios_100_22*filtered_data_df_2022$values)/sum(ratios_100_21*filtered_data_df_2021$values) -1
 
 # inflation rates
 inf20b=sum(ratios_20_21*filtered_data_df_2022$values)/sum(ratios_20_21*filtered_data_df_2021$values) -1
 inf40b=sum(ratios_40_21*filtered_data_df_2022$values)/sum(ratios_40_21*filtered_data_df_2021$values) -1
 inf60b=sum(ratios_60_21*filtered_data_df_2022$values)/sum(ratios_60_21*filtered_data_df_2021$values) -1
 inf80b=sum(ratios_80_21*filtered_data_df_2022$values)/sum(ratios_80_21*filtered_data_df_2021$values) -1
+inf100b=sum(ratios_100_22*filtered_data_df_2022$values)/sum(ratios_100_21*filtered_data_df_2021$values) -1
 
 
 
-
-prices_2021 <- c(p_20_21, p_40_21, p_60_21, p_80_21)
-prices_2022 <- c(p20_22, p40_22, p60_22, p80_22)
+prices_2021 <- c(p_20_21, p_40_21, p_60_21, p_80_21, p_100_21)
+prices_2022 <- c(p20_22, p40_22, p60_22, p80_22, p100_22)
 
 # Create a data frame to store both years
 price_data <- data.frame(
-  Quantile = rep(c("20", "40", "60", "80"), 2),
-  Year = rep(c("2021", "2022"), each = 4),
+  Quantile = rep(c("20", "40", "60", "80", "100"), 2),
+  Year = rep(c("2021", "2022"), each = 5),
   PriceIndex = c(prices_2021, prices_2022)
 )
 
@@ -229,14 +238,14 @@ price_plot <- ggplot(price_data, aes(x = Quantile, y = PriceIndex, fill = Year))
   scale_fill_manual(values = c("#3366CC", "#DC3912")) +
   theme_minimal()
 
-inflation <- c(inf20, inf40, inf60, inf80)
+inflation <- c(inf20, inf40, inf60, inf80, inf100)
 
 # Convert inflation rates to percentage
 inflation_percent <- inflation * 100  # Multiply by 100 to convert to percentage
 
 # Create a data frame for inflation
 inflation_data <- data.frame(
-  Quantile = c("20", "40", "60", "80"),
+  Quantile = c("20", "40", "60", "80", "100"),
   Inflation = inflation_percent  # Use the converted percentage values
 )
 
